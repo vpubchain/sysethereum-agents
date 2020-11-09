@@ -39,9 +39,14 @@ public class SyscoinRPCClient {
     private JSONObject rpcCall(String method, List<Object> params) throws JSONRPC2SessionException {
         JSONRPC2Request request = new JSONRPC2Request(method, params, 1);
         JSONRPC2Response response = rpcSession.send(request);
-        JSONObject result;
+        JSONObject result = new JSONObject();
         if (response.indicatesSuccess()) {
-            result = (JSONObject) response.getResult();
+            Object r1 = response.getResult();
+            if (r1 instanceof String) {
+                result.put("result", r1.toString());
+            } else {
+                result = (JSONObject) response.getResult();
+            }
         } else {
             throw new JSONRPC2SessionException(response.getError().getMessage());
         }
