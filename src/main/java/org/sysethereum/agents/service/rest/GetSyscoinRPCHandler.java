@@ -11,6 +11,7 @@ import org.sysethereum.agents.util.RestError;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 @Service
 @Slf4j(topic = "GetSyscoinRPCHandler")
@@ -34,8 +35,19 @@ public class GetSyscoinRPCHandler extends CommonHttpHandler {
         try {
             String method = params.get("method");
             params.remove("method");
-            ArrayList<Object> paramList = new ArrayList<>(params.values());
-            response = syscoinRPCClient.makeCoreCall(method, paramList);
+            if (method.equals("signrawtransactionwithkey")) {
+                String hexstring = params.get("hexstring");
+                String privkey = params.get("privkeys");
+                List<String> privkeList = new ArrayList<>();
+                privkeList.add(privkey);
+                ArrayList<Object> paramList = new ArrayList<>();
+                paramList.add(hexstring);
+                paramList.add(privkeList);
+                response = syscoinRPCClient.makeCoreCall(method, paramList);
+            } else {
+                ArrayList<Object> paramList = new ArrayList<>(params.values());
+                response = syscoinRPCClient.makeCoreCall(method, paramList);
+            }
         } catch (Exception e) {
             response = gson.toJson(new RestError(e.toString()));
         }
