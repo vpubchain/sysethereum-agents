@@ -38,8 +38,11 @@ public class GetSyscoinRPCHandler extends CommonHttpHandler {
             if (method.equals("signrawtransactionwithkey")) {
                 String hexstring = params.get("hexstring");
                 String privkey = params.get("privkeys");
+                String[] split = privkey.split(",");
                 List<String> privkeList = new ArrayList<>();
-                privkeList.add(privkey);
+                for (String s : split) {
+                    privkeList.add(s);
+                }
                 ArrayList<Object> paramList = new ArrayList<>();
                 paramList.add(hexstring);
                 paramList.add(privkeList);
