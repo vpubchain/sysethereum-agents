@@ -1,12 +1,15 @@
 package org.sysethereum.agents.service.rest;
 
-import com.sun.net.httpserver.HttpsExchange;
 import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpsExchange;
+import org.springframework.lang.NonNull;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 public abstract class CommonHttpHandler implements HttpHandler {
 
@@ -36,6 +39,25 @@ public abstract class CommonHttpHandler implements HttpHandler {
     }
 
     /**
+     * Obtain all params of current request.
+     *
+     * @return params
+     */
+    @NonNull
+    protected Map<String, Object> getParams(@NonNull HttpsExchange exchange) {
+        Map<String, Object> params = new LinkedHashMap<>();
+
+        if (!StringUtils.isEmpty(exchange.getRequestURI().getQuery())) {
+            Map<String, String> queryParams = queryToMap(exchange.getRequestURI().getQuery());
+            if (queryParams != null) {
+                params.putAll(queryParams);
+            }
+        }
+
+        return params;
+    }
+
+    /**
      * returns the url parameters in a map preserving order of insertion
      *
      * @param query
@@ -60,4 +82,5 @@ public abstract class CommonHttpHandler implements HttpHandler {
         os.write(response.getBytes());
         os.close();
     }
+
 }
