@@ -112,6 +112,13 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.sysethereum</groupId>
+            <artifactId>sysethereum-agents-dependencies</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/sysethereum-agents-1.0-jar-with-dependencies.jar</systemPath>
+        </dependency>
+        <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.4</version>
