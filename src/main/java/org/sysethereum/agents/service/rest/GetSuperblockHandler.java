@@ -10,14 +10,13 @@ import org.sysethereum.agents.core.syscoin.Keccak256Hash;
 import org.sysethereum.agents.util.RestError;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.LinkedHashMap;
 
 @Service
 @Slf4j(topic = "GetSuperblockHandler")
-public class GetSuperblockHandler extends JsonHttpHandler {
+public class GetSuperblockHandler extends CommonHttpHandler {
 
     private final Gson gson;
-
     private final SyscoinToEthClient syscoinToEthClient;
 
     public GetSuperblockHandler(
@@ -29,19 +28,11 @@ public class GetSuperblockHandler extends JsonHttpHandler {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void handle(HttpExchange httpExchange) throws IOException {
         HttpsExchange httpsExchange = (HttpsExchange) httpExchange;
         if (setOriginAndHandleOptionsMethod(httpsExchange)) return;
 
-        Map<String, String> params;
-
-        if (isMatchedApplicationJson(httpsExchange.getRequestHeaders())) {
-            params = (Map<String, String>) (Object) getParams(httpsExchange);
-        } else {
-            params = queryToMap(httpsExchange.getRequestURI().getQuery());
-        }
-
+        LinkedHashMap<String, String> params = queryToMap(httpsExchange.getRequestURI().getQuery());
         String response;
 
         try {
