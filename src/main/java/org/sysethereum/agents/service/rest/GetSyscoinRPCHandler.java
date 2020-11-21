@@ -4,19 +4,18 @@ import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpsExchange;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
 import org.sysethereum.agents.core.syscoin.SyscoinRPCClient;
 import org.sysethereum.agents.util.RestError;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j(topic = "GetSyscoinRPCHandler")
-public class GetSyscoinRPCHandler extends CommonHttpHandler {
+public class GetSyscoinRPCHandler extends JsonHttpHandler {
 
     private final Gson gson;
     private final SyscoinRPCClient syscoinRPCClient;
@@ -27,11 +26,18 @@ public class GetSyscoinRPCHandler extends CommonHttpHandler {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void handle(HttpExchange httpExchange) throws IOException {
         HttpsExchange httpsExchange = (HttpsExchange) httpExchange;
         if (setOriginAndHandleOptionsMethod(httpsExchange)) return;
         String response;
-        LinkedHashMap<String, String> params = queryToMap(httpsExchange.getRequestURI().getQuery());
+        Map<String, String> params;
+
+        if (isMatchedApplicationJson(httpsExchange.getRequestHeaders())) {
+            params = (Map<String, String>) (Object) getParams(httpsExchange);
+        } else {
+            params = queryToMap(httpsExchange.getRequestURI().getQuery());
+        }
         try {
             String method = params.get("method");
             params.remove("method");
